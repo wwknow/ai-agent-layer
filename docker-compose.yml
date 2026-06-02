@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16
+    container_name: ai_agent_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: ai_agent_redis
+    restart: always
+
+  litellm:
+    image: docker.litellm.ai/berriai/litellm:main-latest
+    container_name: ai_agent_litellm
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD}@db:5432/litellm
+      STORE_MODEL_IN_DB: "True"
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml
+    command: ["--config", "/app/config.yaml", "--port", "4000", "--num_workers", "4"]
+    ports:
+      - "127.0.0.1:4000:4000"
+
+  agent-api:
+    build: ./agent-api
+    container_name: ai_agent_api
+    restart: always
+    depends_on:
+      - litellm
+    env_file:
+      - .env
+    environment:
+      LITELLM_BASE_URL: http://litellm:4000
+    ports:
+      - "127.0.0.1:8088:8088"

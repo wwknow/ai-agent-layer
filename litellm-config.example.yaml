@@ -1,0 +1,23 @@
+model_list:
+  - model_name: code_fast
+    litellm_params:
+      model: openai/YOUR_OPENAI_MODEL
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: vision_strong
+    litellm_params:
+      model: gemini/YOUR_GEMINI_MODEL
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: code_strong
+    litellm_params:
+      model: anthropic/YOUR_CLAUDE_MODEL
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: cheap_batch
+    litellm_params:
+      model: deepseek/YOUR_DEEPSEEK_MODEL
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+general_settings:
+  database_connection_pool_limit: 10
