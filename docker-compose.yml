@@ -28,7 +28,7 @@ services:
       STORE_MODEL_IN_DB: "True"
     volumes:
       - ./litellm-config.yaml:/app/config.yaml
-    command: ["--config", "/app/config.yaml", "--port", "4000", "--num_workers", "4"]
+    command: ["--config", "/app/config.yaml", "--port", "4000", "--num_workers", "1"]
     ports:
       - "127.0.0.1:4000:4000"
 
