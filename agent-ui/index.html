@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Agent Layer Console</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      background: #f6f7fb;
+      color: #222;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 48px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.06);
+      padding: 28px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .sub {
+      color: #666;
+      margin-bottom: 24px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 18px 0 8px;
+    }
+    select, textarea, button {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      font-size: 15px;
+    }
+    select {
+      padding: 12px;
+      background: #fff;
+    }
+    textarea {
+      min-height: 180px;
+      padding: 14px;
+      resize: vertical;
+    }
+    button {
+      margin-top: 18px;
+      padding: 14px;
+      border: 0;
+      background: #111827;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0b1020;
+      color: #d7e1ff;
+      padding: 18px;
+      border-radius: 14px;
+      min-height: 160px;
+      margin-top: 18px;
+      overflow: auto;
+    }
+    .ok {
+      color: #0a7c3b;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>AI Agent Layer Console</h1>
+      <div class="sub">Agent API → LiteLLM → Gemini</div>
+
+      <label>任务类型</label>
+      <select id="taskType">
+        <option value="code_generate">code_generate 代码生成</option>
+        <option value="inspect">inspect 网站巡检</option>
+        <option value="clone_plan">clone_plan 复刻方案</option>
+        <option value="code_fix">code_fix 修复代码</option>
+        <option value="copywriting">copywriting 文案生成</option>
+      </select>
+
+      <label>Prompt</label>
+      <textarea id="prompt">用中文生成一个简单的 React 登录页结构。</textarea>
+
+      <button id="runBtn" onclick="runAgent()">运行 Agent</button>
+
+      <pre id="output">等待运行...</pre>
+    </div>
+  </div>
+
+  <script>
+    async function runAgent() {
+      const btn = document.getElementById('runBtn');
+      const output = document.getElementById('output');
+      const taskType = document.getElementById('taskType').value;
+      const prompt = document.getElementById('prompt').value;
+
+      btn.disabled = true;
+      output.textContent = '运行中...';
+
+      try {
+        const res = await fetch('/agent/agent/run', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            task_type: taskType,
+            prompt: prompt
+          })
+        });
+
+        const text = await res.text();
+
+        try {
+          const json = JSON.parse(text);
+          const content = json?.choices?.[0]?.message?.content;
+          output.textContent = content || JSON.stringify(json, null, 2);
+        } catch (e) {
+          output.textContent = text;
+        }
+      } catch (err) {
+        output.textContent = '请求失败：' + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

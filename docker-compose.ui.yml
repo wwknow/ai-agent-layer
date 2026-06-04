@@ -1,0 +1,12 @@
+services:
+  agent-ui:
+    image: nginx:alpine
+    container_name: ai_agent_ui
+    restart: always
+    depends_on:
+      - agent-api
+    volumes:
+      - ./agent-ui/index.html:/usr/share/nginx/html/index.html:ro
+      - ./agent-ui/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:18088:80"
