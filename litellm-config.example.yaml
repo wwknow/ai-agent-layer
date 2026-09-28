@@ -1,4 +1,14 @@
 model_list:
+  - model_name: support_fast
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: support_fallback
+    litellm_params:
+      model: gemini/gemini-3.5-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+
   - model_name: code_fast
     litellm_params:
       model: openai/YOUR_OPENAI_MODEL
